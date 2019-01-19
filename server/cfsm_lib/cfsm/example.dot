@@ -1,0 +1,28 @@
+digraph myfsm {
+	rankdir = LR;
+	node [shape = doublecircle];
+	STATE_INIT ;
+	node [shape = circle];
+	STATE_HELO STATE_MAIL STATE_RCPT STATE_DATA STATE_ACCEPT ;
+
+	STATE_INIT -> STATE_HELO [ label = "HELO_EV"];
+	STATE_INIT -> STATE_HELO [ label = "EHLO_EV"];
+	STATE_INIT -> STATE_INIT [ label = "RSET_EV"];
+	STATE_INIT -> STATE_INIT [ label = "VRFY_EV"];
+	STATE_INIT -> STATE_ACCEPT [ label = "QUIT_EV"];
+	STATE_HELO -> STATE_MAIL [ label = "MAIL_EV"];
+	STATE_HELO -> STATE_HELO [ label = "RSET_EV"];
+	STATE_HELO -> STATE_HELO [ label = "VRFY_EV"];
+	STATE_HELO -> STATE_ACCEPT [ label = "QUIT_EV"];
+	STATE_MAIL -> STATE_RCPT [ label = "RCPT_EV"];
+	STATE_MAIL -> STATE_HELO [ label = "RSET_EV"];
+	STATE_MAIL -> STATE_MAIL [ label = "VRFY_EV"];
+	STATE_MAIL -> STATE_ACCEPT [ label = "QUIT_EV"];
+	STATE_RCPT -> STATE_DATA [ label = "DATA_EV"];
+	STATE_RCPT -> STATE_RCPT [ label = "RCPT_EV"];
+	STATE_RCPT -> STATE_HELO [ label = "RSET_EV"];
+	STATE_RCPT -> STATE_RCPT [ label = "VRFY_EV"];
+	STATE_RCPT -> STATE_ACCEPT [ label = "QUIT_EV"];
+	STATE_DATA -> STATE_HELO [ label = "DATA_END_EV"];
+
+}

@@ -1,0 +1,42 @@
+# Define the enumeration and opaque struct types the state machine will use
+state-enum-type mystate
+event-enum-type myevent
+fsm-struct-type myfsm
+
+# Define the names of the exported API functions
+current-state-function myfsm_current
+initialise-function myfsm_init
+free-function myfsm_free
+advance-function myfsm_advance
+state-enum-to-string-function myfsm_state_ntop
+event-enum-to-string-function myfsm_event_ntop
+
+# Define some states and events that trigger transitions between them
+state STATE_INIT
+	initial-state
+	on-event HELO_EV -> STATE_HELO
+	on-event EHLO_EV -> STATE_HELO
+	on-event RSET_EV -> STATE_INIT
+	on-event VRFY_EV -> STATE_INIT
+	on-event QUIT_EV -> STATE_ACCEPT
+state STATE_HELO
+	on-event MAIL_EV -> STATE_MAIL
+	on-event RSET_EV -> STATE_HELO
+	on-event VRFY_EV -> STATE_HELO
+	on-event QUIT_EV -> STATE_ACCEPT
+state STATE_MAIL
+	on-event RCPT_EV -> STATE_RCPT
+	on-event RSET_EV -> STATE_HELO
+	on-event VRFY_EV -> STATE_MAIL
+	on-event QUIT_EV -> STATE_ACCEPT
+state STATE_RCPT
+	on-event DATA_EV -> STATE_DATA
+	on-event RCPT_EV -> STATE_RCPT
+	on-event RSET_EV -> STATE_HELO
+	on-event VRFY_EV -> STATE_RCPT
+	on-event QUIT_EV -> STATE_ACCEPT
+state STATE_DATA
+	on-event DATA_END_EV -> STATE_HELO
+state STATE_ACCEPT
+
+# -------------------------------------------------------------------
