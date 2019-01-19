@@ -1,0 +1,52 @@
+# Define the enumeration and opaque struct types the state machine will use
+state-enum-type mystate
+event-enum-type myevent
+fsm-struct-type myfsm
+
+# Define the names of the exported API functions
+current-state-function myfsm_current
+initialise-function myfsm_init
+advance-function myfsm_advance
+
+# Define some states and events that trigger transitions between them
+state INIT_STATE
+	initial-state
+	on-event HELO_EV -> HELO_STATE
+	on-event EHLO_EV -> HELO_STATE
+	on-event RSET_EV -> INIT_STATE
+	on-event VRFY_EV -> INIT_STATE
+	on-event NOOP_EV -> INIT_STATE
+	on-event QUIT_EV -> CLOSE_STATE
+	on-event TIME_EV -> CLOSE_STATE
+state HELO_STATE
+	on-event HELO_EV -> HELO_STATE
+	on-event EHLO_EV -> HELO_STATE
+	on-event MAIL_EV -> MAIL_STATE
+	on-event RSET_EV -> HELO_STATE
+	on-event VRFY_EV -> HELO_STATE
+	on-event NOOP_EV -> HELO_STATE
+	on-event QUIT_EV -> CLOSE_STATE
+	on-event TIME_EV -> CLOSE_STATE
+state MAIL_STATE
+	on-event HELO_EV -> HELO_STATE
+	on-event EHLO_EV -> HELO_STATE
+	on-event RCPT_EV -> RCPT_STATE
+	on-event RSET_EV -> HELO_STATE
+	on-event VRFY_EV -> MAIL_STATE
+	on-event NOOP_EV -> MAIL_STATE
+	on-event QUIT_EV -> CLOSE_STATE
+	on-event TIME_EV -> CLOSE_STATE
+state RCPT_STATE
+	on-event HELO_EV -> HELO_STATE
+	on-event EHLO_EV -> HELO_STATE
+	on-event DATA_EV -> DATA_STATE
+	on-event RCPT_EV -> RCPT_STATE
+	on-event RSET_EV -> HELO_STATE
+	on-event VRFY_EV -> RCPT_STATE
+	on-event NOOP_EV -> RCPT_STATE
+	on-event QUIT_EV -> CLOSE_STATE
+	on-event TIME_EV -> CLOSE_STATE
+state DATA_STATE
+	on-event DATA_END_EV -> HELO_STATE
+	on-event TIME_EV -> CLOSE_STATE
+state CLOSE_STATE
