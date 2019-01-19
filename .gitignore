@@ -1,3 +1,5 @@
+notsmtp
+*.txt
 # Prerequisites
 *.d
 

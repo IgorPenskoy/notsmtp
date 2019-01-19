@@ -8,16 +8,19 @@ TEST_FUNCT(smtp_cmd_handle) {
     client_init(0, &client);
     sds cmd = sdsempty();
     sds resp = sdsempty();
-    cmd = sdscpy(cmd, "HELO aaa\r\n");
+    snprintf(client->ip_str, INET6_ADDRSTRLEN, "127.0.0.1");
+    cmd = sdscpy(cmd, "HELO localhost\r\n");
     int rc = smtp_cmd_handle(client, cmd, HELO_CMD, &resp);
     CU_ASSERT_EQUAL(rc, SUCCESS_RET);
     CU_ASSERT_STRING_EQUAL(resp, "250 OK\r\n");
     cmd = sdscpy(cmd, "HELO a@b.com\r\n");
     rc = smtp_cmd_handle(client, cmd, HELO_CMD, &resp);
     CU_ASSERT_EQUAL(rc, ERROR_RET);
-    CU_ASSERT_STRING_EQUAL(resp, RESP_LIST[SYNTAX_PARAMETERS]);
+    sds tmp_resp = sdsnew(RESP_LIST[SYNTAX_PARAMETERS]);
+    CU_ASSERT_STRING_EQUAL(resp, tmp_resp);
     sdsfree(cmd);
     sdsfree(resp);
+    sdsfree(tmp_resp);
     client_delete(0);
     free_re();
 }
